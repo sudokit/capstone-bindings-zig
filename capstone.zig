@@ -42,7 +42,3 @@ const enums = @import("src/enums.zig");
 pub const Arch = enums.Arch;
 pub const Mode = enums.Mode;
 pub const Type = enums.Type;
-pub const Value = enums.Value;
-pub const OpType = enums.OpType;
-pub const AcType = enums.AcType;
-pub const GroupType = enums.GroupType;

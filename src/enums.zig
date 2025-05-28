@@ -111,39 +111,3 @@ pub const Type = enum(cs.cs_opt_type) {
     UNSIGNED,
     NO_BRANCH_OFFSET,
 };
-
-pub const Value = enum(cs.cs_opt_value) {
-    OFF = 0,
-    ON = 3,
-    SYNTAX_INTEL = 1,
-    SYNTAX_ATT = 2,
-    SYNTAX_MASM = 4,
-    SYNTAX_MOTOROLA = 5,
-    pub const SYNTAX_DEFAULT: @This() = .OFF;
-    pub const SYNTAX_NOREGNAME: @This() = .ON;
-};
-
-pub const OpType = enum(cs.cs_op_type) {
-    INVALID = 0,
-    REG = 1,
-    IMM = 2,
-    FP = 3,
-    MEM = 0x80,
-};
-
-pub const AcType = enum(cs.cs_ac_type) {
-    INVALID = 0,
-    READ = 1 << 0,
-    WRITE = 1 << 1,
-};
-
-pub const GroupType = enum(cs.cs_group_type) {
-    INVALID = 0,
-    JUMP = 1,
-    CALL = 2,
-    RET = 3,
-    INT = 4,
-    IRET = 5,
-    PRIVILEGE = 6,
-    BRANCH_RELATIVE = 7,
-};
