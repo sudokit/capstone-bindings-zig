@@ -17,6 +17,8 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
+    // expose it for headers...
+    const capstone_c_mod = capstone_c.addModule("capstone-c");
 
     const mod = b.addModule("capstone-bindings-zig", .{
         .root_source_file = b.path("capstone.zig"),
@@ -25,7 +27,7 @@ pub fn build(b: *std.Build) void {
         .imports = &.{
             .{
                 .name = "capstone-c",
-                .module = capstone_c.createModule(),
+                .module = capstone_c_mod,
             },
         },
     });
@@ -40,7 +42,7 @@ pub fn build(b: *std.Build) void {
     });
     mod_test.step.dependOn(&compiled_capstone.step);
 
-    mod_test.root_module.addImport("capstone-c", capstone_c.createModule());
+    mod_test.root_module.addImport("capstone-c", capstone_c_mod);
 
     const run_lib_tests = b.addRunArtifact(mod_test);
     const test_step = b.step("test", "Run the library tests");
