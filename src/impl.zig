@@ -31,7 +31,7 @@ pub fn close(handle: *Handle) err.CapstoneError!void {
     return err.toError(cs.cs_close(@ptrCast(handle))) orelse return;
 }
 
-pub fn option(handle: ?Handle, @"type": enums.Type, value: usize) err.CapstoneError!void {
+pub fn option(handle: ?Handle, @"type": enums.OptionsType, value: usize) err.CapstoneError!void {
     return err.toError(cs.cs_option(handle orelse 0, @intFromEnum(@"type"), value)) orelse return;
 }
 
