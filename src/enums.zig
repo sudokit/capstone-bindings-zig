@@ -111,3 +111,14 @@ pub const Type = enum(cs.cs_opt_type) {
     UNSIGNED,
     NO_BRANCH_OFFSET,
 };
+
+pub const Value = enum(cs.cs_opt_value) {
+    OFF = 0, // < Turn OFF an option - default for CS_OPT_DETAIL, CS_OPT_SKIPDATA, CS_OPT_UNSIGNED.
+    ON = 3,
+    SYNTAX_DEFAULT = 0,
+    SYNTAX_INTEL,
+    SYNTAX_ATT,
+    SYNTAX_NOREGNAME,
+    SYNTAX_MASM,
+    SYNTAX_MOTOROLA,
+};
