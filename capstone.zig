@@ -1,6 +1,8 @@
 const impl = @import("src/impl.zig");
 pub const Iter = impl.Iter;
 pub const Handle = impl.Handle;
+pub const Insn = impl.insn.Insn;
+pub const Detail = impl.insn.Detail;
 pub const version = impl.version;
 pub const support = impl.support;
 pub const open = impl.open;
