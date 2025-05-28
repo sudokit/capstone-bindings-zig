@@ -1,3 +1,4 @@
+const builtin = @import("builtin");
 const std = @import("std");
 
 const insn = @import("insn.zig");
@@ -5,11 +6,16 @@ const err = @import("error.zig");
 
 const cs = @import("capstone-c");
 
+const VaList = if (builtin.os.tag == .windows and builtin.cpu.arch == .x86_64)
+    cs.__builtin_va_list
+else
+    std.builtin.VaList;
+
 pub const MallocFunction = ?*const fn (usize) callconv(.C) ?*anyopaque;
 pub const CallocFunction = ?*const fn (usize, usize) callconv(.C) ?*anyopaque;
 pub const ReallocFunction = ?*const fn (?*anyopaque, usize) callconv(.C) ?*anyopaque;
 pub const FreeFunction = ?*const fn (?*anyopaque) callconv(.C) void;
-pub const VsnprintfFunction = ?*const fn ([*]u8, usize, [*]const u8, [*]std.builtin.VaList) callconv(.C) c_int;
+pub const VsnprintfFunction = ?*const fn ([*]u8, usize, [*]const u8, [*]VaList) callconv(.C) c_int;
 
 var ALLOCATOR: ?std.mem.Allocator = null;
 
@@ -20,7 +26,7 @@ var ALLOCATION_TABLE: AllocationTable = .{};
 
 fn malloc(size: usize) callconv(.C) ?*anyopaque {
     if (ALLOCATOR) |alloc| {
-        const allocated = alloc.alignedAlloc(u8, 16, size) catch return null;
+        const allocated = alloc.alignedAlloc(u8, .@"16", size) catch return null;
         ALLOCATION_TABLE.put(alloc, @intFromPtr(allocated.ptr), allocated.len) catch @panic("OOM");
         return @ptrCast(allocated.ptr);
     } else {
@@ -74,7 +80,7 @@ fn free(ptr: ?*anyopaque) callconv(.C) void {
     }
 }
 
-extern "C" fn vsnprintf([*c]u8, usize, [*c]const u8, [*c]std.builtin.VaList) callconv(.C) c_int;
+extern "C" fn vsnprintf([*c]u8, usize, [*c]const u8, [*c]VaList) callconv(.C) c_int;
 
 /// Inits Capstone to be used with Zig
 pub fn initCapstone(alloc: std.mem.Allocator) err.CapstoneError!void {
