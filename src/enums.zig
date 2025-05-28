@@ -99,7 +99,7 @@ pub const Mode = enum(cs.cs_mode) {
 };
 // zig fmt: on
 
-pub const Type = enum(cs.cs_opt_type) {
+pub const OptionsType = enum(cs.cs_opt_type) {
     INVALID,
     SYNTAX,
     DETAIL,

@@ -1,8 +1,8 @@
 const impl = @import("src/impl.zig");
 pub const Iter = impl.Iter;
 pub const Handle = impl.Handle;
-pub const Insn = impl.insn.Insn;
 pub const Detail = impl.insn.Detail;
+pub const Insn = impl.insn.Insn;
 pub const version = impl.version;
 pub const support = impl.support;
 pub const open = impl.open;
@@ -43,6 +43,6 @@ pub const initCapstoneManually = setup.initCapstoneManually;
 const enums = @import("src/enums.zig");
 pub const Arch = enums.Arch;
 pub const Mode = enums.Mode;
-pub const Type = enums.Type;
+pub const OptionsType = enums.OptionsType;
 
 pub const c = @import("capstone-c");
