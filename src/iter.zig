@@ -25,9 +25,4 @@ pub const Iter = struct {
     pub fn deinit(self: Iter) void {
         cs.cs_free(@ptrCast(self.insn), 1);
     }
-
-    /// Returns the current address
-    pub fn address(self: Iter) u64 {
-        return self.address;
-    }
 };

@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
 
     compiled_capstone.getEmittedIncludeTree().addStepDependencies(&compiled_capstone.step);
     const capstone_c = b.addTranslateC(.{
-        .root_source_file = compiled_capstone.getEmittedIncludeTree().path(b, "capstone/capstone.h"),
+        .root_source_file = compiled_capstone.getEmittedIncludeTree().path(b, "capstone.h"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
