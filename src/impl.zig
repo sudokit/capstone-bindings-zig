@@ -71,23 +71,13 @@ pub fn malloc(handle: Handle) [*]insn.Insn {
 /// Same as the normal Variant, but does the allocation for you.
 pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) Iter {
     const ins = malloc(handle);
-    return Iter{
-        .handle = handle,
-        .code = code,
-        .address = address,
-        .insn = ins,
-    };
+    return Iter.init(handle, code, address, ins);
 }
 
 /// Return an Iter object
 /// Does not yet consume any element.
 pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: [*]insn.Insn) Iter {
-    return Iter{
-        .handle = handle,
-        .code = code,
-        .address = address,
-        .insn = ins,
-    };
+    return Iter.init(handle, code, address, ins);
 }
 
 pub fn regName(handle: Handle, reg_id: c_uint) [*:0]const u8 {

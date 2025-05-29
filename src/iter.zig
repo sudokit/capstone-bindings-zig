@@ -7,8 +7,21 @@ const Handle = cs.csh;
 pub const Iter = struct {
     handle: Handle,
     code: []const u8,
+    original_code: []const u8,
+    original_address: u64,
     address: u64,
     insn: [*]Insn,
+
+    pub fn init(handle: Handle, code: []const u8, address: u64, insn: [*]Insn) Iter {
+        return Iter{
+            .handle = handle,
+            .code = code,
+            .original_code = code,
+            .original_address = address,
+            .address = address,
+            .insn = insn,
+        };
+    }
 
     // Consumes the iterator and goes to the next
     pub fn next(self: *Iter) ?*Insn {
@@ -19,6 +32,11 @@ pub const Iter = struct {
         } else {
             return null;
         }
+    }
+
+    pub fn reset(self: *Iter) void {
+        self.address = self.original_address;
+        self.code = self.original_code;
     }
 
     // Clean up the iter
