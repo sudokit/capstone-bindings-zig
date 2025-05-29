@@ -36,13 +36,16 @@ pub fn build(b: *std.Build) void {
     mod.addIncludePath(compiled_capstone.getEmittedIncludeTree());
 
     const mod_test = b.addTest(.{
-        .root_source_file = mod.root_source_file.?,
+        .root_source_file = b.path("src/tests.zig"),
         .target = target,
         .optimize = optimize,
     });
     mod_test.step.dependOn(&compiled_capstone.step);
 
     mod_test.root_module.addImport("capstone-c", capstone_c_mod);
+    mod_test.addLibraryPath(compiled_capstone.getEmittedBin().dirname());
+    mod_test.linkLibrary(capstone.artifact("capstone"));
+    mod_test.addIncludePath(compiled_capstone.getEmittedIncludeTree());
 
     const run_lib_tests = b.addRunArtifact(mod_test);
     const test_step = b.step("test", "Run the library tests");

@@ -6,6 +6,7 @@ const err = @import("error.zig");
 
 const cs = @import("capstone-c");
 
+// TODO: Use std.builtin.VaList later for windows x86_64, it's disabled currently in the zig's builtin since 0.14.1
 const VaList = if (builtin.os.tag == .windows and builtin.cpu.arch == .x86_64)
     cs.__builtin_va_list
 else
@@ -26,7 +27,10 @@ var ALLOCATION_TABLE: AllocationTable = .{};
 
 fn malloc(size: usize) callconv(.C) ?*anyopaque {
     if (ALLOCATOR) |alloc| {
-        const allocated = alloc.alignedAlloc(u8, .@"16", size) catch return null;
+        const allocated = if (builtin.zig_version.major == 0 and builtin.zig_version.minor == 14)
+            alloc.alignedAlloc(u8, 16, size) catch return null
+        else
+            alloc.alignedAlloc(u8, .@"16", size) catch return null;
         ALLOCATION_TABLE.put(alloc, @intFromPtr(allocated.ptr), allocated.len) catch @panic("OOM");
         return @ptrCast(allocated.ptr);
     } else {

@@ -4,8 +4,10 @@ pub const err = @import("error.zig");
 pub const insn = @import("insn.zig");
 pub const setup = @import("setup.zig");
 pub const enums = @import("enums.zig");
+const iter = @import("iter.zig");
 
-pub const Iter = @import("iter.zig").Iter;
+pub const Iter = iter.Iter;
+pub const IterManaged = iter.IterManaged;
 pub const Handle = cs.csh;
 
 pub fn version(major: ?*c_int, minor: ?*c_int) err.CapstoneError!void {
@@ -31,7 +33,7 @@ pub fn close(handle: *Handle) err.CapstoneError!void {
     return err.toError(cs.cs_close(@ptrCast(handle))) orelse return;
 }
 
-pub fn option(handle: ?Handle, @"type": enums.OptionsType, value: usize) err.CapstoneError!void {
+pub fn option(handle: ?Handle, @"type": enums.Type, value: usize) err.CapstoneError!void {
     return err.toError(cs.cs_option(handle orelse 0, @intFromEnum(@"type"), value)) orelse return;
 }
 
@@ -69,9 +71,8 @@ pub fn malloc(handle: Handle) [*]insn.Insn {
 }
 
 /// Same as the normal Variant, but does the allocation for you.
-pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) Iter {
-    const ins = malloc(handle);
-    return Iter.init(handle, code, address, ins);
+pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) IterManaged {
+    return IterManaged.init(handle, code, address);
 }
 
 /// Return an Iter object
@@ -128,4 +129,5 @@ test {
     @import("std").testing.refAllDecls(@import("error.zig"));
     @import("std").testing.refAllDecls(@import("insn.zig"));
     @import("std").testing.refAllDecls(@import("setup.zig"));
+    @import("std").testing.refAllDecls(@import("ManagedHandle.zig"));
 }

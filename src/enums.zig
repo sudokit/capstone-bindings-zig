@@ -99,7 +99,7 @@ pub const Mode = enum(cs.cs_mode) {
 };
 // zig fmt: on
 
-pub const OptionsType = enum(cs.cs_opt_type) {
+pub const Type = enum(cs.cs_opt_type) {
     INVALID,
     SYNTAX,
     DETAIL,
@@ -110,4 +110,13 @@ pub const OptionsType = enum(cs.cs_opt_type) {
     MNEMONIC,
     UNSIGNED,
     NO_BRANCH_OFFSET,
+};
+
+pub const Syntax = enum(cs.cs_opt_value) {
+    DEFAULT = 0,
+    INTEL,
+    ATT,
+    NOREGNAME,
+    MASM,
+    MOTOROLA,
 };
