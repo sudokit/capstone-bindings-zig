@@ -49,4 +49,24 @@ pub const Type = enums.Type;
 
 pub const ManagedHandle = @import("src/ManagedHandle.zig");
 
+const arch = @import("src/arch/arch.zig");
+pub const x86 = arch.x86;
+pub const arm64 = arch.arm64;
+pub const arm = arch.arm;
+pub const m68k = arch.m68k;
+pub const mips = arch.mips;
+pub const ppc = arch.ppc;
+pub const sparc = arch.sparc;
+pub const sysz = arch.sysz;
+pub const xcore = arch.xcore;
+pub const tms320c64x = arch.tms320c64x;
+pub const m680x = arch.m680x;
+pub const evm = arch.evm;
+pub const mos65xx = arch.mos65xx;
+pub const wasm = arch.wasm;
+pub const bpf = arch.bpf;
+pub const riscv = arch.riscv;
+pub const sh = arch.sh;
+pub const tricore = arch.tricore;
+
 pub const c = @import("capstone-c");
