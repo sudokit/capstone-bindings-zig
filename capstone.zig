@@ -2,6 +2,7 @@ const impl = @import("src/impl.zig");
 pub const Iter = impl.Iter;
 pub const IterManaged = impl.IterManaged;
 pub const Handle = impl.Handle;
+pub const Regs = impl.Regs;
 pub const Detail = impl.insn.Detail;
 pub const Insn = impl.insn.Insn;
 pub const version = impl.version;

@@ -5,39 +5,32 @@ const cs = @import("capstone-c");
 
 const err = @import("error.zig");
 const insn = @import("insn.zig");
-const setup = @import("setup.zig");
 const enums = @import("enums.zig");
 const impl = @import("impl.zig");
 
 const iter = @import("iter.zig");
 
-const Iter = iter.Iter;
-const IterManaged = iter.IterManaged;
-
 native: impl.Handle,
 
 // To avoid heap allocations...
-const TmpStorage = blk: {
-    if (builtin.single_threaded) {
-        break :blk struct {
-            var detail: insn.Detail = std.mem.zeroes(insn.Detail);
-            var ins: insn.Insn = std.mem.zeroes(insn.Insn);
-            fn getIns() *insn.Insn {
-                ins.detail = &detail;
-                return &ins;
-            }
-        };
-    } else {
-        break :blk struct {
-            threadlocal var detail: insn.Detail = std.mem.zeroes(insn.Detail);
-            threadlocal var ins: insn.Insn = std.mem.zeroes(insn.Insn);
-            fn getIns() *insn.Insn {
-                ins.detail = &detail;
-                return &ins;
-            }
-        };
+const tmp_storage = if (builtin.single_threaded)
+    struct {
+        var detail: insn.Detail = std.mem.zeroes(insn.Detail);
+        var ins: insn.Insn = std.mem.zeroes(insn.Insn);
+        fn getIns() *insn.Insn {
+            ins.detail = &detail;
+            return &ins;
+        }
     }
-};
+else
+    struct {
+        threadlocal var detail: insn.Detail = std.mem.zeroes(insn.Detail);
+        threadlocal var ins: insn.Insn = std.mem.zeroes(insn.Insn);
+        fn getIns() *insn.Insn {
+            ins.detail = &detail;
+            return &ins;
+        }
+    };
 
 const Self = @This();
 
@@ -48,6 +41,9 @@ pub const Options = struct {
     detail: bool = false,
     /// Skip data when disassembling. Then engine is in SKIPDATA mode.
     skipdata: bool = false,
+    /// Setup user-defined function for SKIPDATA option
+    /// The pointers must be valid till the handle is closed.
+    skipdata_setup: ?SkipDataOption = null,
     /// Customize instruction mnemonic
     /// Must be valid till the handle is closed if set.
     mnemonic: []const MnemonicOption = &.{},
@@ -56,10 +52,16 @@ pub const Options = struct {
     /// ARM, prints branch immediates without offset.
     no_branch_offset: bool = false,
 
-    /// cs_opt_mnem
+    // cs_opt_mnem
     pub const MnemonicOption = extern struct {
         id: c_uint,
         mnemonic: [*:0]const u8,
+    };
+    // cs_skipdata
+    pub const SkipDataOption = extern struct {
+        mnemonic: [*:0]const u8,
+        callback: ?*const fn ([*c]const u8, usize, usize, ?*anyopaque) callconv(.c) usize,
+        user_data: ?*anyopaque = null,
     };
 };
 
@@ -76,6 +78,11 @@ pub fn init(arch: enums.Arch, mode: enums.Mode, options: Options) !Self {
 
     if (options.skipdata) {
         try impl.option(handle, .SKIPDATA, cs.CS_OPT_ON);
+    }
+
+    if (options.skipdata_setup) |setup| {
+        // cs_option copies the values.
+        try impl.option(handle, .SKIPDATA_SETUP, @intFromPtr(&setup));
     }
 
     if (options.unsigned) {
@@ -107,8 +114,8 @@ pub fn disasmAlloc(self: Self, allocator: std.mem.Allocator, code: []const u8, a
 }
 
 /// Uses global/threadlocal storage to avoid heap allocations for the single Insn struct.
-pub fn disasmIter(self: Self, code: []const u8, address: u64) Iter {
-    return impl.disasmIter(self.native, code, address, @ptrCast(TmpStorage.getIns()));
+pub fn disasmIter(self: Self, code: []const u8, address: u64) iter.Iter {
+    return impl.disasmIter(self.native, code, address, tmp_storage.getIns());
 }
 
 pub fn deinit(self: *Self) void {

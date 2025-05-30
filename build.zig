@@ -17,7 +17,6 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    // expose it for headers...
     const capstone_c_mod = capstone_c.createModule();
 
     const mod = b.addModule("capstone-bindings-zig", .{

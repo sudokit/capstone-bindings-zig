@@ -76,13 +76,13 @@ pub fn freeInsn(ins: *insn.Insn) void {
 }
 
 /// Same as the normal Variant, but does the allocation for you.
-pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) IterManaged {
+pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) !IterManaged {
     return IterManaged.init(handle, code, address);
 }
 
 /// Return an Iter object
 /// Does not yet consume any element.
-pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: [*]insn.Insn) Iter {
+pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: *insn.Insn) Iter {
     return Iter{
         .handle = handle,
         .code = code,
@@ -105,8 +105,8 @@ pub fn groupName(handle: Handle, group_id: c_uint) [*:0]const u8 {
     return cs.cs_group_name(handle, group_id);
 }
 
-pub fn insnGroup(handle: Handle, ins: []const insn.Insn, group_id: c_uint) bool {
-    return cs.cs_insn_group(handle, @ptrCast(ins.ptr), group_id);
+pub fn insnGroup(handle: Handle, ins: *const insn.Insn, group_id: c_uint) bool {
+    return cs.cs_insn_group(handle, @ptrCast(ins), group_id);
 }
 
 pub fn regRead(handle: Handle, ins: *const insn.Insn, reg_id: c_uint) bool {
@@ -125,20 +125,21 @@ pub fn opIndex(handle: Handle, ins: *const insn.Insn, op_type: c_uint, position:
     return cs.cs_op_index(handle, @ptrCast(ins), op_type, position);
 }
 
+pub const Regs = [64]u16;
 pub fn regsAccess(
     handle: Handle,
     ins: *const insn.Insn,
-    regs_read: [*]u16,
+    regs_read: *Regs,
     regs_read_count: *u8,
-    regs_write: [*]u16,
+    regs_write: *Regs,
     regs_write_count: *u8,
 ) err.CapstoneError!void {
     return err.toError(cs.cs_regs_access(
         handle,
         @ptrCast(ins),
-        regs_read,
+        @ptrCast(regs_read[0..].ptr),
         @ptrCast(regs_read_count),
-        regs_write,
+        @ptrCast(regs_write[0..].ptr),
         @ptrCast(regs_write_count),
     )) orelse return;
 }

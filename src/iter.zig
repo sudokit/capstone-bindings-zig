@@ -10,14 +10,13 @@ pub const Iter = struct {
     original_code: []const u8,
     original_address: u64,
     address: u64,
-    insn: [*]Insn,
+    insn: *Insn,
 
     // Consumes the iterator and goes to the next
     pub fn next(self: *Iter) ?*Insn {
         if (cs.cs_disasm_iter(self.handle, @ptrCast(&self.code.ptr), @ptrCast(&self.code.len), &self.address, @ptrCast(self.insn))) {
-            const ret = &self.insn[0];
-            ret.normalizeStrings();
-            return ret;
+            self.insn.normalizeStrings();
+            return self.insn;
         } else {
             return null;
         }
@@ -32,10 +31,11 @@ pub const Iter = struct {
 /// The Iterator for traversing the disassembler, but **allocates** space using capstone malloc.
 pub const IterManaged = struct {
     inner: Iter,
-    insn: [*]Insn,
+    insn: *Insn,
 
-    pub fn init(handle: Handle, code: []const u8, address: u64) IterManaged {
-        const insn: [*]Insn = @ptrCast(cs.cs_malloc(handle));
+    pub fn init(handle: Handle, code: []const u8, address: u64) !IterManaged {
+        const insn_ptr: ?*Insn = @ptrCast(cs.cs_malloc(handle));
+        const insn = if (insn_ptr) |i| i else return error.OutOfMemory;
         return .{
             .inner = Iter{
                 .handle = handle,
