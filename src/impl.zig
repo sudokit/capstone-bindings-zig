@@ -66,8 +66,13 @@ pub fn free(ins: []insn.Insn) void {
     cs.cs_free(@ptrCast(ins.ptr), ins.len);
 }
 
-pub fn malloc(handle: Handle) [*]insn.Insn {
-    return @ptrCast(cs.cs_malloc(handle));
+pub fn allocInsn(handle: Handle) !*insn.Insn {
+    const ins: ?*insn.Insn = @ptrCast(cs.cs_malloc(handle));
+    return if (ins) |i| return i else return error.OutOfMemory;
+}
+
+pub fn freeInsn(ins: *insn.Insn) void {
+    cs.cs_free(@ptrCast(ins), 1);
 }
 
 /// Same as the normal Variant, but does the allocation for you.
@@ -104,31 +109,38 @@ pub fn insnGroup(handle: Handle, ins: []const insn.Insn, group_id: c_uint) bool 
     return cs.cs_insn_group(handle, @ptrCast(ins.ptr), group_id);
 }
 
-pub fn regRead(handle: Handle, ins: []const insn.Insn, reg_id: c_uint) bool {
-    return cs.cs_reg_read(handle, @ptrCast(ins.ptr), reg_id);
+pub fn regRead(handle: Handle, ins: *const insn.Insn, reg_id: c_uint) bool {
+    return cs.cs_reg_read(handle, @ptrCast(ins), reg_id);
 }
 
-pub fn regWrite(handle: Handle, ins: []const insn.Insn, reg_id: c_uint) bool {
-    return cs.cs_reg_write(handle, @ptrCast(ins.ptr), reg_id);
+pub fn regWrite(handle: Handle, ins: *const insn.Insn, reg_id: c_uint) bool {
+    return cs.cs_reg_write(handle, @ptrCast(ins), reg_id);
 }
 
-pub fn opCount(handle: Handle, ins: []const insn.Insn, op_type: c_uint) c_int {
-    return cs.cs_op_count(handle, @ptrCast(ins.ptr), op_type);
+pub fn opCount(handle: Handle, ins: *const insn.Insn, op_type: c_uint) c_int {
+    return cs.cs_op_count(handle, @ptrCast(ins), op_type);
 }
 
-pub fn opIndex(handle: Handle, ins: []const insn.Insn, op_type: c_uint, position: c_uint) c_int {
-    return cs.cs_op_index(handle, @ptrCast(ins.ptr), op_type, position);
+pub fn opIndex(handle: Handle, ins: *const insn.Insn, op_type: c_uint, position: c_uint) c_int {
+    return cs.cs_op_index(handle, @ptrCast(ins), op_type, position);
 }
 
 pub fn regsAccess(
     handle: Handle,
-    ins: []const insn.Insn,
+    ins: *const insn.Insn,
     regs_read: [*]u16,
-    regs_read_count: [*]u8,
+    regs_read_count: *u8,
     regs_write: [*]u16,
-    regs_write_count: [*]u8,
+    regs_write_count: *u8,
 ) err.CapstoneError!void {
-    return err.toError(cs.cs_regs_access(handle, @ptrCast(ins.ptr), regs_read, regs_read_count, regs_write, regs_write_count)) orelse return;
+    return err.toError(cs.cs_regs_access(
+        handle,
+        @ptrCast(ins),
+        regs_read,
+        @ptrCast(regs_read_count),
+        regs_write,
+        @ptrCast(regs_write_count),
+    )) orelse return;
 }
 
 test {
