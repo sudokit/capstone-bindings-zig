@@ -12,17 +12,6 @@ pub const Iter = struct {
     address: u64,
     insn: [*]Insn,
 
-    pub fn init(handle: Handle, code: []const u8, address: u64, insn: [*]Insn) Iter {
-        return Iter{
-            .handle = handle,
-            .code = code,
-            .original_code = code,
-            .original_address = address,
-            .address = address,
-            .insn = insn,
-        };
-    }
-
     // Consumes the iterator and goes to the next
     pub fn next(self: *Iter) ?*Insn {
         if (cs.cs_disasm_iter(self.handle, @ptrCast(&self.code.ptr), @ptrCast(&self.code.len), &self.address, @ptrCast(self.insn))) {
@@ -48,7 +37,14 @@ pub const IterManaged = struct {
     pub fn init(handle: Handle, code: []const u8, address: u64) IterManaged {
         const insn: [*]Insn = @ptrCast(cs.cs_malloc(handle));
         return .{
-            .inner = Iter.init(handle, code, address, insn),
+            .inner = Iter{
+                .handle = handle,
+                .code = code,
+                .original_code = code,
+                .original_address = address,
+                .address = address,
+                .insn = insn,
+            },
             .insn = insn,
         };
     }

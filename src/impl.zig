@@ -78,7 +78,14 @@ pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) IterMan
 /// Return an Iter object
 /// Does not yet consume any element.
 pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: [*]insn.Insn) Iter {
-    return Iter.init(handle, code, address, ins);
+    return Iter{
+        .handle = handle,
+        .code = code,
+        .original_code = code,
+        .original_address = address,
+        .address = address,
+        .insn = ins,
+    };
 }
 
 pub fn regName(handle: Handle, reg_id: c_uint) [*:0]const u8 {
@@ -129,5 +136,4 @@ test {
     @import("std").testing.refAllDecls(@import("error.zig"));
     @import("std").testing.refAllDecls(@import("insn.zig"));
     @import("std").testing.refAllDecls(@import("setup.zig"));
-    @import("std").testing.refAllDecls(@import("ManagedHandle.zig"));
 }

@@ -108,12 +108,12 @@ pub fn disasmAlloc(self: Self, allocator: std.mem.Allocator, code: []const u8, a
 
 /// Uses global/threadlocal storage to avoid heap allocations for the single Insn struct.
 pub fn disasmIter(self: Self, code: []const u8, address: u64) Iter {
-    return Iter.init(self.native, code, address, @ptrCast(TmpStorage.getIns()));
+    return impl.disasmIter(self.native, code, address, @ptrCast(TmpStorage.getIns()));
 }
 
 pub fn deinit(self: *Self) void {
     impl.close(&self.native) catch |e| {
-        std.debug.print("Failed to close handle: {any}\n", .{impl.strerror(e)});
+        std.io.getStdErr().writer().print("Failed to close handle: {any}\n", .{impl.strerror(e)}) catch {};
     };
 }
 
