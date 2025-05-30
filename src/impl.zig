@@ -62,17 +62,32 @@ pub fn disasm(handle: Handle, code: []const u8, address: usize, count: usize) er
     return ins[0..res_count];
 }
 
-pub fn free(ins: []insn.Insn) void {
-    cs.cs_free(@ptrCast(ins.ptr), ins.len);
+/// Equivilent to cs_free
+/// Only accepts `[]insn.Insn` or `*insn.Insn` types.
+pub fn free(ins: anytype) void {
+    const type_info = @typeInfo(@TypeOf(ins));
+
+    if (type_info == .pointer) {
+        const pointer_type = type_info.pointer;
+        if (pointer_type.child != insn.Insn and pointer_type.size != .one) {
+            @compileError("`ins` type doesn't match `[]insn.Insn` or `*insn.Insn`");
+        }
+        cs.cs_free(@ptrCast(ins), 1);
+    } else if (type_info == .array) {
+        const array_type = type_info.array;
+        if (array_type.child != insn.Insn) {
+            @compileError("`ins` type doesn't match `[]insn.Insn` or `*insn.Insn`");
+        }
+        cs.cs_free(@ptrCast(ins.ptr), ins.len);
+    } else {
+        @compileError("`ins` type doesn't match `[]insn.Insn` or `*insn.Insn`");
+    }
 }
 
-pub fn allocInsn(handle: Handle) !*insn.Insn {
+/// Equivilent to cs_malloc
+pub fn malloc(handle: Handle) !*insn.Insn {
     const ins: ?*insn.Insn = @ptrCast(cs.cs_malloc(handle));
     return if (ins) |i| return i else return error.OutOfMemory;
-}
-
-pub fn freeInsn(ins: *insn.Insn) void {
-    cs.cs_free(@ptrCast(ins), 1);
 }
 
 /// Same as the normal Variant, but does the allocation for you.
@@ -149,4 +164,15 @@ test {
     @import("std").testing.refAllDecls(@import("error.zig"));
     @import("std").testing.refAllDecls(@import("insn.zig"));
     @import("std").testing.refAllDecls(@import("setup.zig"));
+}
+
+test "free" {
+    var handle = try open(.X86, .@"16");
+    defer close(&handle) catch {};
+    const ins = try malloc(handle);
+    defer free(ins);
+
+    const disass = try disasm(handle, "\x75\x14", 0x1000, 0);
+    defer free(disass);
+    try @import("std").testing.expectEqual(1, disass.len);
 }
