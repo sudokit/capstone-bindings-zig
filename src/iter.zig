@@ -13,7 +13,7 @@ pub const Iter = struct {
     insn: *Insn,
 
     // Consumes the iterator and goes to the next
-    pub fn next(self: *Iter) ?*Insn {
+    pub fn next(self: *Iter) ?*const Insn {
         if (cs.cs_disasm_iter(self.handle, @ptrCast(&self.code.ptr), @ptrCast(&self.code.len), &self.address, @ptrCast(self.insn))) {
             self.insn.normalizeStrings();
             return self.insn;
@@ -50,7 +50,7 @@ pub const IterManaged = struct {
     }
 
     // Consumes the iterator and goes to the next
-    pub fn next(self: *IterManaged) ?*Insn {
+    pub fn next(self: *IterManaged) ?*const Insn {
         return self.inner.next();
     }
 

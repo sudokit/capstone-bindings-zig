@@ -10,11 +10,17 @@ pub const Iter = iter.Iter;
 pub const IterManaged = iter.IterManaged;
 pub const Handle = cs.csh;
 
-pub fn version(major: ?*c_int, minor: ?*c_int) err.CapstoneError!void {
-    const maj = major orelse return {};
-    const min = minor orelse return {};
+const SemanticVersion = @import("std").SemanticVersion;
+pub fn version() SemanticVersion {
+    var major: c_uint = 0;
+    var minor: c_uint = 0;
 
-    return err.toError(cs.cs_version(@ptrCast(maj), @ptrCast(min))) orelse return;
+    _ = cs.cs_version(@ptrCast(&major), @ptrCast(&minor));
+    return SemanticVersion{
+        .major = @intCast(major),
+        .minor = @intCast(minor),
+        .patch = 0, // Capstone does not provide patch version
+    };
 }
 
 pub fn support(query: c_int) bool {
@@ -166,7 +172,7 @@ test {
     @import("std").testing.refAllDecls(@import("setup.zig"));
 }
 
-test "free" {
+test "malloc and free" {
     var handle = try open(.X86, .@"16");
     defer close(&handle) catch {};
     const ins = try malloc(handle);

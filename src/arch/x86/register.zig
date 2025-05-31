@@ -1,4 +1,4 @@
-pub const cs = @import("capstone-c");
+const cs = @import("capstone-c");
 
 pub const Register = enum(cs.x86_reg) {
     INVALID = 0,
