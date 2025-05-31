@@ -6,11 +6,13 @@ pub const setup = @import("setup.zig");
 pub const enums = @import("enums.zig");
 const iter = @import("iter.zig");
 
-pub const Iter = iter.Iter;
+pub const IterUnmanaged = iter.IterUnmanaged;
 pub const IterManaged = iter.IterManaged;
 pub const Handle = cs.csh;
 
+const Allocator = @import("std").mem.Allocator;
 const SemanticVersion = @import("std").SemanticVersion;
+
 pub fn version() SemanticVersion {
     var major: c_uint = 0;
     var minor: c_uint = 0;
@@ -96,21 +98,58 @@ pub fn malloc(handle: Handle) !*insn.Insn {
     return if (ins) |i| return i else return error.OutOfMemory;
 }
 
-/// Same as the normal Variant, but does the allocation for you.
-pub fn disasmIterManaged(handle: Handle, code: []const u8, address: u64) !IterManaged {
-    return IterManaged.init(handle, code, address);
+/// Create an Insn object using the provided allocator.
+/// The owner takes responsibility of the pointer.
+/// Must be destroyed with `destroyInsn`.
+pub fn createInsn(allocator: Allocator, detail: bool) !*insn.Insn {
+    const ins = try allocator.create(insn.Insn);
+    if (detail) {
+        ins.detail = try allocator.create(insn.Detail);
+    } else {
+        ins.detail = null;
+    }
+    return ins;
 }
 
-/// Return an Iter object
+/// Creates a duplicate of the provided Insn object using the provided allocator.
+/// The owner takes responsibility of the pointer.
+/// Must be destroyed with `destroyInsn`.
+pub fn dupeInsn(allocator: Allocator, ins: *const insn.Insn) !*insn.Insn {
+    var new_ins = try createInsn(allocator, ins.detail != null);
+    const new_detail = new_ins.detail;
+    new_ins.* = ins.*;
+
+    if (ins.detail) |detail| {
+        new_detail.?.* = detail.*;
+        new_ins.detail = new_detail;
+    }
+
+    return new_ins;
+}
+
+/// Destroy an Insn object created with `createInsn`.
+pub fn destroyInsn(allocator: Allocator, ins: *insn.Insn) void {
+    if (ins.detail) |detail| {
+        allocator.destroy(detail);
+    }
+    allocator.destroy(ins);
+}
+
+/// Same as the normal Variant, but does the allocations using the provided allocator.
+pub fn disasmIterManaged(allocator: Allocator, handle: Handle, code: []const u8, address: u64) !IterManaged {
+    return IterManaged.init(allocator, handle, code, address);
+}
+
+/// Return an IterUnmanaged object
 /// Does not yet consume any element.
-pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: *insn.Insn) Iter {
-    return Iter{
+pub fn disasmIter(handle: Handle, code: []const u8, address: u64, ins: *insn.Insn) IterUnmanaged {
+    return IterUnmanaged{
         .handle = handle,
         .code = code,
         .original_code = code,
         .original_address = address,
         .address = address,
-        .insn = ins,
+        .ins = ins,
     };
 }
 
@@ -181,4 +220,42 @@ test "malloc and free" {
     const disass = try disasm(handle, "\x75\x14", 0x1000, 0);
     defer free(disass);
     try @import("std").testing.expectEqual(1, disass.len);
+}
+
+test "disasm iter managed" {
+    const testing = @import("std").testing;
+    const allocator = testing.allocator;
+
+    var handle = try open(.X86, .@"64");
+    defer close(&handle) catch {};
+
+    var dis_iter = try disasmIterManaged(allocator, handle, "\x75\x14", 0x1000);
+    defer dis_iter.deinit();
+
+    const ins = dis_iter.next().?;
+    try testing.expect(ins.detail != null);
+    try testing.expectEqualStrings("jne", ins.mnemonic[0..3]);
+}
+
+test "create, dupe and destroy Insn" {
+    const testing = @import("std").testing;
+    const allocator = testing.allocator;
+
+    const ins = try createInsn(allocator, true);
+    defer destroyInsn(allocator, ins);
+
+    ins.id = 0x1234;
+    ins.address = 0x1000;
+    ins.size = 2;
+
+    ins.detail.?.groups_count = 2;
+
+    const duped_ins = try dupeInsn(allocator, ins);
+    defer destroyInsn(allocator, duped_ins);
+
+    try testing.expectEqual(ins.id, duped_ins.id);
+    try testing.expectEqual(ins.address, duped_ins.address);
+    try testing.expectEqual(ins.size, duped_ins.size);
+    try testing.expectEqual(ins.detail.?.groups_count, duped_ins.detail.?.groups_count);
+    try testing.expect(ins.detail != duped_ins.detail);
 }

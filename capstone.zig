@@ -1,5 +1,5 @@
 const impl = @import("src/impl.zig");
-pub const Iter = impl.Iter;
+pub const IterUnmanaged = impl.IterUnmanaged;
 pub const IterManaged = impl.IterManaged;
 pub const Handle = impl.Handle;
 pub const Regs = impl.Regs;
@@ -15,6 +15,9 @@ pub const strerror = impl.strerror;
 pub const disasm = impl.disasm;
 pub const free = impl.free;
 pub const malloc = impl.malloc;
+pub const createInsn = impl.createInsn;
+pub const dupeInsn = impl.dupeInsn;
+pub const destroyInsn = impl.destroyInsn;
 pub const disasmIterManaged = impl.disasmIterManaged;
 pub const disasmIter = impl.disasmIter;
 pub const regName = impl.regName;
