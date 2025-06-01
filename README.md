@@ -45,7 +45,7 @@ that gives the following output:
 0: 0x1000       push    rbp
 1: 0x1001       mov     rax, qword ptr [rip + 0x13b8]
 2: 0x1008       our_jmp 0xffffffffdeadcef7
-3: 0x100d       our_jmp qword ptr [rip + 0x123]      
+3: 0x100d       our_jmp qword ptr [rip + 0x123]
 4: 0x1013       call    0xffffffffdeadcef7
 5: 0x1018       je      0x1019
 ```
