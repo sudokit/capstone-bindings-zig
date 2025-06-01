@@ -111,3 +111,12 @@ pub const Type = enum(cs.cs_opt_type) {
     UNSIGNED,
     NO_BRANCH_OFFSET,
 };
+
+pub const Syntax = enum(cs.cs_opt_value) {
+    DEFAULT = 0,
+    INTEL,
+    ATT,
+    NOREGNAME,
+    MASM,
+    MOTOROLA,
+};

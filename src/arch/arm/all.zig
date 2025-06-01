@@ -1,8 +1,15 @@
-const VectorData = @import("vectordata.zig").VectorData;
-const Cps = @import("cps.zig");
-const Cc = @import("cc.zig").Cc;
-const Barrier = @import("barrier.zig").Barrier;
-const Operand = @import("operand.zig").Operand;
+pub const Barrier = @import("barrier.zig").Barrier;
+pub const Cc = @import("cc.zig").Cc;
+pub const Cps = @import("cps.zig");
+pub const OpType = @import("op_type.zig").OpType;
+pub const Register = @import("register.zig").Register;
+pub const Setend = @import("setend.zig").Setend;
+pub const Shift = @import("shift.zig").Shift;
+pub const VectorData = @import("vectordata.zig").VectorData;
+pub const OpMem = @import("op_mem.zig").OpMem;
+pub const Shifter = @import("shifter.zig").Shifter;
+pub const Instruction = @import("instruction.zig").Instruction;
+pub const Operand = @import("operand.zig").Operand;
 
 pub const Arch = extern struct {
     usermode: bool,

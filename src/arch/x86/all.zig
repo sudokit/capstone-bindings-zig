@@ -10,14 +10,14 @@ pub const Flags = extern union {
     fpu_flags: u64,
 };
 
-const OpType = enum(cs.x86_op_type) {
+pub const OpType = enum(cs.x86_op_type) {
     INVALID = 0,
     REG,
     IMM,
     MEM,
 };
 
-const Memory = extern struct {
+pub const Memory = extern struct {
     segment: reg.Register,
     base: reg.Register,
     index: reg.Register,
@@ -25,7 +25,7 @@ const Memory = extern struct {
     disp: i64,
 };
 
-const Instruction = extern union {
+pub const Instruction = extern union {
     reg: reg.Register,
     imm: i64,
     mem: Memory,

@@ -8,7 +8,9 @@ pub const Detail = extern struct {
     groups: [8]u8,
     groups_count: u8,
     writeback: bool,
-    arch: arch.Arch,
+    arch: Arch,
+
+    pub const Arch = arch.Arch;
 };
 
 pub const Insn = extern struct {
