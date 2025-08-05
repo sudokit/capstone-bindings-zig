@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.arm_reg) {
+pub const Register = enum(c_int) {
     INVALID,
     APSR,
     APSR_NZCV,

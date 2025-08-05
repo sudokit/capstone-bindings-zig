@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const AddressMode = enum(cs.m68k_address_mode) {
+pub const AddressMode = enum(c_int) {
     NONE,
     REG_DIRECT_DATA,
     REG_DIRECT_ADDR,

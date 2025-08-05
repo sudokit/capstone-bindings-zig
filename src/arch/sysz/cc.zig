@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Cc = enum(cs.sysz_cc) {
+pub const Cc = enum(c_int) {
     INVALID,
     O,
     H,

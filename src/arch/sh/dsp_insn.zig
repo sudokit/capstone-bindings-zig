@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const DspInsn = enum(cs.sh_dsp_insn) {
+pub const DspInsn = enum(c_int) {
     NOP,
     MOV,
     PSHL,

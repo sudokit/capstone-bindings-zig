@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const MemType = enum(cs.sh_op_mem_type) {
+pub const MemType = enum(c_int) {
     INVALID,
     REG_IND,
     REG_POST,

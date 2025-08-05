@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Cc = enum(cs.x86_avx_cc) {
+pub const Cc = enum(c_int) {
     INVALID = 0,
     EQ,
     LT,
@@ -36,7 +36,7 @@ pub const Cc = enum(cs.x86_avx_cc) {
     TRUE_US,
 };
 
-pub const Rm = enum(cs.x86_avx_rm) {
+pub const Rm = enum(c_int) {
     INVALID = 0,
     RN,
     RD,
@@ -44,7 +44,7 @@ pub const Rm = enum(cs.x86_avx_rm) {
     RZ,
 };
 
-pub const Bcast = enum(cs.x86_avx_bcast) {
+pub const Bcast = enum(c_int) {
     INVALID = 0,
     @"2",
     @"4",

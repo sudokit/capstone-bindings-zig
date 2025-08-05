@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Extender = enum(cs.arm64_extender) {
+pub const Extender = enum(c_int) {
     INVALID = 0,
     UXTB = 1,
     UXTH = 2,

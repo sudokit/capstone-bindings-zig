@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Pstate = enum(cs.arm64_pstate) {
+pub const Pstate = enum(c_int) {
     INVALID = 0,
     SPSEL = 5,
     DAIFSET = 30,

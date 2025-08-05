@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const SysOp = enum(cs.arm64_sys_op) {
+pub const SysOp = enum(c_int) {
     INVALID = 0,
     ALLE1 = 1,
     ALLE1IS = 2,

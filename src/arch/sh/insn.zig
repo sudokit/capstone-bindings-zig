@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Insn = enum(cs.sh_insn) {
+pub const Insn = enum(c_int) {
     INVALID,
     ADD_r,
     ADD,

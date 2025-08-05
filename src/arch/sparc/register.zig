@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.sparc_reg) {
+pub const Register = enum(c_int) {
     INVALID,
     F0,
     F1,

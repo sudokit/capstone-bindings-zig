@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.ppc_reg) {
+pub const Register = enum(c_int) {
     INVALID = 0,
     CARRY = 2,
     CTR = 3,

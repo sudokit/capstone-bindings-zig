@@ -1,13 +1,13 @@
 const cs = @import("capstone-c");
 
-pub const CpuSize = enum(cs.m68k_cpu_size) {
+pub const CpuSize = enum(c_int) {
     NONE,
     BYTE,
     WORD,
     LONG = 4,
 };
 
-pub const FpuSize = enum(cs.m68k_fpu_size) {
+pub const FpuSize = enum(c_int) {
     NONE,
     SINGLE = 4,
     DOUBLE = 8,
@@ -19,7 +19,7 @@ pub const UnitSize = extern union {
     fpu_size: FpuSize,
 };
 
-pub const SizeType = enum(cs.m68k_size_type) {
+pub const SizeType = enum(c_int) {
     INVALID,
     CPU,
     FPU,

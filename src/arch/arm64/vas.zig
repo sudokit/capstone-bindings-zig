@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Vas = enum(cs.arm64_vas) {
+pub const Vas = enum(c_int) {
     INVALID = 0,
     @"16B" = 1,
     @"8B" = 2,

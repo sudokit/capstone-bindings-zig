@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Shift = enum(cs.arm64_shifter) {
+pub const Shift = enum(c_int) {
     INVALID = 0,
     LSL = 1,
     MSL = 2,

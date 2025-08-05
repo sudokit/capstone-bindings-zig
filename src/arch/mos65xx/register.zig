@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.mos65xx_reg) {
+pub const Register = enum(c_int) {
     NONE,
     IMP,
     ACC,

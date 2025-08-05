@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.m68k_reg) {
+pub const Register = enum(c_int) {
     INVALID,
     D0,
     D1,

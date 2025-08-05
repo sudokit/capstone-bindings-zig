@@ -10,7 +10,7 @@ pub const Flags = extern union {
     fpu_flags: u64,
 };
 
-pub const OpType = enum(cs.x86_op_type) {
+pub const OpType = enum(c_int) {
     INVALID = 0,
     REG,
     IMM,

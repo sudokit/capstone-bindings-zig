@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const DspOperand = enum(cs.sh_dsp_operand) {
+pub const DspOperand = enum(c_int) {
     INVALID,
     REG_PRE,
     REG_IND,

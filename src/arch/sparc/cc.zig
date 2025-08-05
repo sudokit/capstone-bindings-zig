@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Cc = enum(cs.sparc_cc) {
+pub const Cc = enum(c_int) {
     INVALID = 0,
     ICC_A = 264,
     ICC_N = 256,

@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Hint = enum(cs.sparc_hint) {
+pub const Hint = enum(c_int) {
     INVALID,
     A,
     PT,

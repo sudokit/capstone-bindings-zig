@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Bc = enum(cs.ppc_bc) {
+pub const Bc = enum(c_int) {
     INVALID,
     LT = 12,
     LE = 36,

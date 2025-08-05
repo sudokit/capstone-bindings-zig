@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const VectorData = enum(cs.arm_vectordata_type) {
+pub const VectorData = enum(c_int) {
     INVALID,
     I8,
     I16,

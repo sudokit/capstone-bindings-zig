@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const OpType = enum(cs.wasm_op_type) {
+pub const OpType = enum(c_int) {
     INVALID,
     NONE,
     INT7,

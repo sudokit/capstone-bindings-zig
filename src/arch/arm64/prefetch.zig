@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Prefetch = enum(cs.arm64_prefetch_op) {
+pub const Prefetch = enum(c_int) {
     INVALID = 0,
     PLDL1KEEP = 1,
     PLDL1STRM = 2,

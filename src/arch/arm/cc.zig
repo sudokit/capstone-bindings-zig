@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Cc = enum(cs.arm_cc) {
+pub const Cc = enum(c_int) {
     INVALID,
     EQ,
     NE,

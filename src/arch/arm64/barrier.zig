@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Barrier = enum(cs.arm64_barrier_op) {
+pub const Barrier = enum(c_int) {
     INVALID = 0,
     OSHLD = 1,
     OSHST = 2,

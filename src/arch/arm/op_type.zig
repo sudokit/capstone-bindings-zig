@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const OpType = enum(cs.arm_op_type) {
+pub const OpType = enum(c_int) {
     INVALID,
     REG,
     IMM,

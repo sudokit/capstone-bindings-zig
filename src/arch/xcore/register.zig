@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const Register = enum(cs.xcore_reg) {
+pub const Register = enum(c_int) {
     INVALID,
     CP,
     DP,

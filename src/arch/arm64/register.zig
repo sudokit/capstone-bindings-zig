@@ -1,7 +1,7 @@
 pub const cs = @import("capstone-c");
 
 // zig fmt: off
-pub const Register = enum(cs.arm64_reg) {
+pub const Register = enum(c_int) {
     INVALID,
     FFR,
     FP = 2,

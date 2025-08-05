@@ -1,6 +1,6 @@
 const cs = @import("capstone-c");
 
-pub const AddressMode = enum(cs.mos65xx_address_mode) {
+pub const AddressMode = enum(c_int) {
     INVALID,
     ACC,
     X,

@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
 
     compiled_capstone.getEmittedIncludeTree().addStepDependencies(&compiled_capstone.step);
     const capstone_c = b.addTranslateC(.{
-        .root_source_file = compiled_capstone.getEmittedIncludeTree().path(b, "capstone.h"),
+        .root_source_file = compiled_capstone.getEmittedIncludeTree().path(b, "capstone/capstone.h"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
@@ -35,9 +35,11 @@ pub fn build(b: *std.Build) void {
     mod.addIncludePath(compiled_capstone.getEmittedIncludeTree());
 
     const mod_test = b.addTest(.{
-        .root_source_file = b.path("src/tests.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .root_source_file = b.path("src/tests.zig"),
+        }),
     });
     mod_test.step.dependOn(&compiled_capstone.step);
 
